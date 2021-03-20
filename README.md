@@ -1,3 +1,3 @@
 # ebanx-test
 
-Test for Software Engineer on Ebanx.
+Test for Software Engineer at Ebanx.

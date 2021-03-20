@@ -5,7 +5,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
         "laravel/lumen-framework": "^8.0"
     },
     "require-dev": {
@@ -17,6 +17,8 @@
     "autoload": {
         "psr-4": {
             "Source\\": "src/",
+            "Source\\Infra\\": "src/infra/",
+            "Source\\Modules\\": "src/modules/",
             "App\\": "framework/app/",
             "Database\\Factories\\": "framework/database/factories/",
             "Database\\Seeders\\": "framework/database/seeders/"

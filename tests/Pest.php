@@ -1,5 +1,12 @@
 <?php
 
+use Source\Infra\Database\DatabaseAdapter;
+use Source\Modules\Account\AccountGateway;
+use Source\Modules\Account\Adapter\AccountRepository;
+use Source\Modules\Account\Port\In\IAccountGateway;
+use Source\Modules\Movement\Adapter\MovementRepository;
+use Source\Modules\Movement\UseCase\CreateDeposit;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -39,7 +46,10 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function makeAccountGateway(): IAccountGateway
 {
-    // ..
+    $database = new DatabaseAdapter();
+    $database->resetDatabase();
+
+    return new AccountGateway(new CreateDeposit(new AccountRepository($database), new MovementRepository()));
 }
