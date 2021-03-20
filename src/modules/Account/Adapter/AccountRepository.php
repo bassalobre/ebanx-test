@@ -3,6 +3,7 @@
 namespace Source\Modules\Account\Adapter;
 
 use Source\Modules\Account\Domain\Account;
+use Source\Modules\Account\Domain\AccountNotFoundException;
 use Source\Modules\Account\Port\Out\IAccountRepository;
 use Source\Infra\Database\IDatabase;
 
@@ -17,7 +18,7 @@ class AccountRepository implements IAccountRepository
         $this->accounts = $this->database->selectTable('accounts');
     }
 
-    public function getAccountById(string $accountId): ?Account
+    public function getAccountById(string $accountId): Account
     {
         foreach ($this->accounts as $account) {
             if ($account['id'] === $accountId) {
@@ -25,7 +26,7 @@ class AccountRepository implements IAccountRepository
             }
         }
 
-        return null;
+        throw new AccountNotFoundException();
     }
 
     public function createAccount(string $accountId): Account
