@@ -17,6 +17,7 @@
     "autoload": {
         "psr-4": {
             "Source\\": "src/",
+            "Source\\Application\\": "src/application/",
             "Source\\Infra\\": "src/infra/",
             "Source\\Modules\\": "src/modules/",
             "App\\": "framework/app/",

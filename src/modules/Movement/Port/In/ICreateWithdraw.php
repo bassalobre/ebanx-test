@@ -2,10 +2,10 @@
 
 namespace Source\Modules\Movement\Port\In;
 
-use Source\Modules\Account\Domain\Account;
-use Source\Modules\Movement\Domain\WithdrawDTO;
+use Source\Modules\Movement\Domain\DTO\WithdrawDTO;
+use Source\Modules\Movement\Domain\Output\WithdrawOutput;
 
 interface ICreateWithdraw
 {
-    public function execute(WithdrawDTO $data): Account;
+    public function execute(WithdrawDTO $data): WithdrawOutput;
 }

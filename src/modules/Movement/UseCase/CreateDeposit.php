@@ -2,10 +2,10 @@
 
 namespace Source\Modules\Movement\UseCase;
 
-use Source\Modules\Account\Domain\Account;
 use Source\Modules\Account\Port\Out\IAccountRepository;
-use Source\Modules\Movement\Domain\DepositDTO;
+use Source\Modules\Movement\Domain\DTO\DepositDTO;
 use Source\Modules\Movement\Domain\Movement;
+use Source\Modules\Movement\Domain\Output\DepositOutput;
 use Source\Modules\Movement\Port\In\ICreateDeposit;
 use Source\Modules\Movement\Port\Out\IMovementRepository;
 
@@ -16,7 +16,7 @@ class CreateDeposit implements ICreateDeposit
         private IMovementRepository $movementRepository,
     ) {}
 
-    public function execute(DepositDTO $data): Account
+    public function execute(DepositDTO $data): DepositOutput
     {
         try {
             $account = $this->accountRepository->getAccountById($data->destination);
@@ -32,6 +32,8 @@ class CreateDeposit implements ICreateDeposit
         $this->movementRepository->saveMovement($movement);
         $newBalance = $account->balance + $data->amount;
 
-        return $this->accountRepository->changeAccountBalance($account, $newBalance);
+        return new DepositOutput(
+            destination: $this->accountRepository->changeAccountBalance($account, $newBalance),
+        );
     }
 }

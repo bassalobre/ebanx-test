@@ -2,9 +2,9 @@
 
 namespace Source\Modules\Movement;
 
-use Source\Modules\Movement\Domain\DepositDTO;
-use Source\Modules\Movement\Domain\TransferDTO;
-use Source\Modules\Movement\Domain\WithdrawDTO;
+use Source\Modules\Movement\Domain\DTO\DepositDTO;
+use Source\Modules\Movement\Domain\DTO\TransferDTO;
+use Source\Modules\Movement\Domain\DTO\WithdrawDTO;
 use Source\Modules\Movement\Port\In\ICreateDeposit;
 use Source\Modules\Movement\Port\In\ICreateTransfer;
 use Source\Modules\Movement\Port\In\ICreateWithdraw;
@@ -55,14 +55,11 @@ class MovementGateway implements IMovementGateway
             destination: $data['destination'],
             amount: $data['amount'],
         );
-        $account = $this->createDeposit->execute($dto);
 
-        return [
-            'destination' => [
-                'id' => $account->id,
-                'balance' => $account->balance,
-            ]
-        ];
+        return $this
+            ->createDeposit
+            ->execute($dto)
+            ->toArray();
     }
 
     private function withdraw(array $data): array
@@ -72,14 +69,11 @@ class MovementGateway implements IMovementGateway
             origin: $data['origin'],
             amount: $data['amount'],
         );
-        $account = $this->createWithdraw->execute($dto);
 
-        return [
-            'origin' => [
-                'id' => $account->id,
-                'balance' => $account->balance,
-            ]
-        ];
+        return $this
+            ->createWithdraw
+            ->execute($dto)
+            ->toArray();
     }
 
     private function transfer(array $data): array
@@ -91,6 +85,9 @@ class MovementGateway implements IMovementGateway
             destination: $data['destination'],
         );
 
-        return $this->createTransfer->execute($dto);
+        return $this
+            ->createTransfer
+            ->execute($dto)
+            ->toArray();
     }
 }

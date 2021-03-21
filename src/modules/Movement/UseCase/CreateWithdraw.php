@@ -2,10 +2,10 @@
 
 namespace Source\Modules\Movement\UseCase;
 
-use Source\Modules\Account\Domain\Account;
 use Source\Modules\Account\Port\Out\IAccountRepository;
 use Source\Modules\Movement\Domain\Movement;
-use Source\Modules\Movement\Domain\WithdrawDTO;
+use Source\Modules\Movement\Domain\DTO\WithdrawDTO;
+use Source\Modules\Movement\Domain\Output\WithdrawOutput;
 use Source\Modules\Movement\Port\In\ICreateWithdraw;
 use Source\Modules\Movement\Port\Out\IMovementRepository;
 
@@ -16,7 +16,7 @@ class CreateWithdraw implements ICreateWithdraw
         private IMovementRepository $movementRepository,
     ) {}
 
-    public function execute(WithdrawDTO $data): Account
+    public function execute(WithdrawDTO $data): WithdrawOutput
     {
         $account = $this->accountRepository->getAccountById($data->origin);
 
@@ -28,6 +28,8 @@ class CreateWithdraw implements ICreateWithdraw
         $this->movementRepository->saveMovement($movement);
         $newBalance = $account->balance - $data->amount;
 
-        return $this->accountRepository->changeAccountBalance($account, $newBalance);
+        return new WithdrawOutput(
+            origin: $this->accountRepository->changeAccountBalance($account, $newBalance),
+        );
     }
 }

@@ -4,7 +4,8 @@ namespace Source\Modules\Movement\UseCase;
 
 use Source\Modules\Account\Port\Out\IAccountRepository;
 use Source\Modules\Movement\Domain\Movement;
-use Source\Modules\Movement\Domain\TransferDTO;
+use Source\Modules\Movement\Domain\DTO\TransferDTO;
+use Source\Modules\Movement\Domain\Output\TransferOutput;
 use Source\Modules\Movement\Port\In\ICreateTransfer;
 use Source\Modules\Movement\Port\Out\IMovementRepository;
 
@@ -15,7 +16,7 @@ class CreateTransfer implements ICreateTransfer
         private IMovementRepository $movementRepository,
     ) {}
 
-    public function execute(TransferDTO $data): array
+    public function execute(TransferDTO $data): TransferOutput
     {
         $originAccount = $this->accountRepository->getAccountById($data->origin);
 
@@ -36,9 +37,9 @@ class CreateTransfer implements ICreateTransfer
         $newOriginBalance = $originAccount->balance - $data->amount;
         $newDestinationBalance = $destinationAccount->balance + $data->amount;
 
-        return [
-            'origin' => (array) $this->accountRepository->changeAccountBalance($originAccount, $newOriginBalance),
-            'destination' => (array) $this->accountRepository->changeAccountBalance($destinationAccount, $newDestinationBalance),
-        ];
+        return new TransferOutput(
+            origin: $this->accountRepository->changeAccountBalance($originAccount, $newOriginBalance),
+            destination: $this->accountRepository->changeAccountBalance($destinationAccount, $newDestinationBalance),
+        );
     }
 }

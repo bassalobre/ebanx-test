@@ -1,12 +1,12 @@
 <?php
 
-namespace Source\Modules\Movement\Domain;
+namespace Source\Modules\Movement\Domain\DTO;
 
-class DepositDTO
+class WithdrawDTO
 {
     public function __construct(
         public string $type,
-        public string $destination,
+        public string $origin,
         public float|int $amount,
     ) {}
 }
