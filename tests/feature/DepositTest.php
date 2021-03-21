@@ -1,6 +1,6 @@
 <?php
 
-test('test should create a deposit in a initial account', function () {
+test('test should create a deposit in an initial account', function () {
     $gateway = makeAccountGateway();
 
     $data = [
@@ -18,7 +18,7 @@ test('test should create a deposit in a initial account', function () {
     ]);
 });
 
-test('test should create a deposit in a existing account', function () {
+test('test should create a deposit in an existing account', function () {
     $gateway = makeAccountGateway();
 
     $data = [

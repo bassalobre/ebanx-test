@@ -2,12 +2,12 @@
 
 namespace Source\Modules\Movement\Domain;
 
-class Movement
+class TransferDTO
 {
     public function __construct(
         public string $type,
+        public string $origin,
         public float $amount,
-        public ?string $origin = null,
-        public ?string $destination = null,
+        public string $destination,
     ) {}
 }

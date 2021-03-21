@@ -38,7 +38,7 @@ class AccountRepository implements IAccountRepository
         return new Account(...$account);
     }
 
-    public function changeAccountBalance(Account $account, float $balance): void
+    public function changeAccountBalance(Account $account, float $balance): Account
     {
         $account->balance = $balance;
 
@@ -49,6 +49,8 @@ class AccountRepository implements IAccountRepository
         }
 
         $this->updateData();
+
+        return $account;
     }
 
     private function updateData(): void

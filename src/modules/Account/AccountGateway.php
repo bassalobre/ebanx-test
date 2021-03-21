@@ -3,50 +3,33 @@
 namespace Source\Modules\Account;
 
 use Source\Modules\Account\Port\In\IAccountGateway;
-use Source\Modules\Movement\Domain\DepositDTO;
-use Source\Modules\Movement\Domain\WithdrawDTO;
-use Source\Modules\Movement\Port\In\ICreateDeposit;
-use Source\Modules\Movement\Port\In\ICreateWithdraw;
+use Source\Modules\Movement\MovementType;
+use Source\Modules\Movement\Port\In\IMovementGateway;
 
 class AccountGateway implements IAccountGateway
 {
     public function __construct(
-        private ICreateDeposit $createDeposit,
-        private ICreateWithdraw $createWithdraw,
+        private IMovementGateway $movementGateway,
     ) {}
 
     public function movement(array $data): array
     {
         try {
-            if ($data['type'] === 'withdraw') {
-                $dto = new WithdrawDTO(
-                    type: $data['type'],
-                    origin: $data['origin'],
-                    amount: $data['amount'],
-                );
-                $withdraw = $this->createWithdraw->execute($dto);
-
-                return [
-                    'origin' => [
-                        'id' => $withdraw->origin,
-                        'balance' => $withdraw->balance,
-                    ]
-                ];
+            switch ($data['type']) {
+                case MovementType::DEPOSIT:
+                    return $this->movementGateway->deposit($data);
+                case MovementType::WITHDRAW:
+                    return $this->movementGateway->withdraw($data);
+                case MovementType::TRANSFER:
+                    return $this->movementGateway->transfer($data);
+                default:
+                    return [
+                        'error' => [
+                            'message' => 'Movement type not allowed',
+                            'code' => 400,
+                        ]
+                    ];
             }
-
-            $dto = new DepositDTO(
-                type: $data['type'],
-                destination: $data['destination'],
-                amount: $data['amount'],
-            );
-            $deposit = $this->createDeposit->execute($dto);
-
-            return [
-                'destination' => [
-                    'id' => $deposit->destination,
-                    'balance' => $deposit->balance,
-                ]
-            ];
         } catch (\Exception $exception) {
             $code = $exception->getCode() ? $exception->getCode() : 500;
 

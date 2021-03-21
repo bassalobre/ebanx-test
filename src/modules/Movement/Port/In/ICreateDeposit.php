@@ -2,10 +2,10 @@
 
 namespace Source\Modules\Movement\Port\In;
 
+use Source\Modules\Account\Domain\Account;
 use Source\Modules\Movement\Domain\DepositDTO;
-use Source\Modules\Movement\Domain\Movement;
 
 interface ICreateDeposit
 {
-    public function execute(DepositDTO $data): Movement;
+    public function execute(DepositDTO $data): Account;
 }

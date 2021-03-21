@@ -5,7 +5,9 @@ use Source\Modules\Account\AccountGateway;
 use Source\Modules\Account\Adapter\AccountRepository;
 use Source\Modules\Account\Port\In\IAccountGateway;
 use Source\Modules\Movement\Adapter\MovementRepository;
+use Source\Modules\Movement\MovementGateway;
 use Source\Modules\Movement\UseCase\CreateDeposit;
+use Source\Modules\Movement\UseCase\CreateTransfer;
 use Source\Modules\Movement\UseCase\CreateWithdraw;
 
 /*
@@ -55,8 +57,13 @@ function makeAccountGateway(): IAccountGateway
     $accountRepository = new AccountRepository($database);
     $movementRepository = new MovementRepository();
 
-    return new AccountGateway(
+    $movementGateway = new MovementGateway(
         new CreateDeposit($accountRepository, $movementRepository),
         new CreateWithdraw($accountRepository, $movementRepository),
+        new CreateTransfer($accountRepository, $movementRepository),
+    );
+
+    return new AccountGateway(
+        $movementGateway
     );
 }

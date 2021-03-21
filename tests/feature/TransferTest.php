@@ -1,12 +1,13 @@
 <?php
 
-test('test should create a withdraw event in a non existing account', function () {
+test('test should create a transfer event in a non existing account', function () {
     $gateway = makeAccountGateway();
 
     $data = [
-        'type' => 'withdraw',
+        'type' => 'transfer',
         'origin' => '200',
-        'amount' => 10,
+        'amount' => 15,
+        'destination' => '300',
     ];
     $response = $gateway->movement($data);
 
@@ -18,24 +19,29 @@ test('test should create a withdraw event in a non existing account', function (
     ]);
 });
 
-test('test should create a withdraw event in an existing account', function () {
+test('test should create a transfer event in an existing account', function () {
     $gateway = makeAccountGateway();
 
     $deposit = $gateway->movement([
         'type' => 'deposit',
         'destination' => '100',
-        'amount' => 20,
+        'amount' => 15,
     ]);
-    $withdraw = $gateway->movement([
-        'type' => 'withdraw',
+    $transfer = $gateway->movement([
+        'type' => 'transfer',
         'origin' => '100',
-        'amount' => 5,
+        'amount' => 15,
+        'destination' => '300',
     ]);
 
-    expect($withdraw)->toMatchArray([
+    expect($transfer)->toMatchArray([
         'origin' => [
             'id' => '100',
+            'balance' => 0,
+        ],
+        'destination' => [
+            'id' => '300',
             'balance' => 15,
-        ]
+        ],
     ]);
 });
