@@ -64,6 +64,7 @@ function makeAccountGateway(): IAccountGateway
     );
 
     return new AccountGateway(
-        $movementGateway
+        $movementGateway,
+        $accountRepository,
     );
 }

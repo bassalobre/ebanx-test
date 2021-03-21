@@ -3,6 +3,7 @@
 namespace Source\Modules\Account;
 
 use Source\Modules\Account\Port\In\IAccountGateway;
+use Source\Modules\Account\Port\Out\IAccountRepository;
 use Source\Modules\Movement\MovementType;
 use Source\Modules\Movement\Port\In\IMovementGateway;
 
@@ -10,6 +11,7 @@ class AccountGateway implements IAccountGateway
 {
     public function __construct(
         private IMovementGateway $movementGateway,
+        private IAccountRepository $accountRepository,
     ) {}
 
     public function movement(array $data): array
@@ -44,15 +46,17 @@ class AccountGateway implements IAccountGateway
 
     public function balance(string $accountId): array
     {
-        if ($accountId === '1234') {
+        try {
+            return (array) $this->accountRepository->getAccountById($accountId);
+        } catch (\Exception $exception) {
+            $code = $exception->getCode() ? $exception->getCode() : 500;
+
             return [
                 'error' => [
-                    'message' => 'Account not found.',
-                    'code' => 404,
+                    'message' => $exception->getMessage(),
+                    'code' => $code,
                 ]
             ];
         }
-
-        return ['id' => $accountId, 'balance' => 20];
     }
 }
