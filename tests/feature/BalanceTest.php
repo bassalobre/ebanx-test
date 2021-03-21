@@ -13,16 +13,18 @@ test('test should not get balance in a non existing account', function () {
     ]);
 });
 
-test('test should create a withdraw event in an existing account', function () {
-    $gateway = makeAccountGateway();
+test('test should get balance in an existing account', function () {
+    $accountRepository = makeAccountRepository();
+    $movementGateway = makeMovementGateway($accountRepository);
+    $accountGateway = makeAccountGateway($accountRepository);
 
-    $deposit = $gateway->movement([
+    $movementGateway->movement([
         'type' => 'deposit',
         'destination' => '100',
         'amount' => 20,
     ]);
 
-    $response = $gateway->balance('100');
+    $response = $accountGateway->balance('100');
 
     expect($response)->toMatchArray([
         'id' => '100',

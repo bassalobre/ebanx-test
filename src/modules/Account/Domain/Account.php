@@ -6,6 +6,6 @@ class Account
 {
     public function __construct(
         public string $id,
-        public float $balance,
+        public float|int $balance,
     ) {}
 }

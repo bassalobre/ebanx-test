@@ -1,14 +1,13 @@
 <?php
 
-test('test should not create a deposit in an initial account', function () {
-    $gateway = makeAccountGateway();
+test('test should create a deposit in an initial account', function () {
+    $gateway = makeMovementGateway();
 
-    $data = [
+    $deposit = $gateway->movement([
         'type' => 'deposit',
         'destination' => '100',
         'amount' => 10,
-    ];
-    $deposit = $gateway->movement($data);
+    ]);
 
     expect($deposit)->toMatchArray([
         'destination' => [
@@ -19,7 +18,7 @@ test('test should not create a deposit in an initial account', function () {
 });
 
 test('test should create a deposit in an existing account', function () {
-    $gateway = makeAccountGateway();
+    $gateway = makeMovementGateway();
 
     $data = [
         'type' => 'deposit',

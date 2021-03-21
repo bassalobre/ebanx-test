@@ -1,14 +1,13 @@
 <?php
 
 test('test should not create a withdraw event in a non existing account', function () {
-    $gateway = makeAccountGateway();
+    $gateway = makeMovementGateway();
 
-    $data = [
+    $response = $gateway->movement([
         'type' => 'withdraw',
         'origin' => '200',
         'amount' => 10,
-    ];
-    $response = $gateway->movement($data);
+    ]);
 
     expect($response)->toMatchArray([
         'error' => [
@@ -19,7 +18,7 @@ test('test should not create a withdraw event in a non existing account', functi
 });
 
 test('test should create a withdraw event in an existing account', function () {
-    $gateway = makeAccountGateway();
+    $gateway = makeMovementGateway();
 
     $deposit = $gateway->movement([
         'type' => 'deposit',

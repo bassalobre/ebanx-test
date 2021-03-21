@@ -21,9 +21,7 @@ class AccountRepository implements IAccountRepository
     public function getAccountById(string $accountId): Account
     {
         foreach ($this->accounts as $account) {
-            if ($account['id'] === $accountId) {
-                return new Account(...$account);
-            }
+            if ($account['id'] === $accountId) return new Account(...$account);
         }
 
         throw new AccountNotFoundException();
@@ -38,7 +36,7 @@ class AccountRepository implements IAccountRepository
         return new Account(...$account);
     }
 
-    public function changeAccountBalance(Account $account, float $balance): Account
+    public function changeAccountBalance(Account $account, float|int $balance): Account
     {
         $account->balance = $balance;
 

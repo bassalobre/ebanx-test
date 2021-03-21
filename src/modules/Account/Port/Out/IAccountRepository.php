@@ -8,5 +8,5 @@ interface IAccountRepository
 {
     public function getAccountById(string $accountId): Account;
     public function createAccount(string $accountId): Account;
-    public function changeAccountBalance(Account $account, float $balance): Account;
+    public function changeAccountBalance(Account $account, float|int $balance): Account;
 }

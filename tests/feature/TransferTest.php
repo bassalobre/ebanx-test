@@ -1,15 +1,14 @@
 <?php
 
 test('test should not create a transfer event in a non existing account', function () {
-    $gateway = makeAccountGateway();
+    $gateway = makeMovementGateway();
 
-    $data = [
+    $response = $gateway->movement([
         'type' => 'transfer',
         'origin' => '200',
         'amount' => 15,
         'destination' => '300',
-    ];
-    $response = $gateway->movement($data);
+    ]);
 
     expect($response)->toMatchArray([
         'error' => [
@@ -20,7 +19,7 @@ test('test should not create a transfer event in a non existing account', functi
 });
 
 test('test should create a transfer event in an existing account', function () {
-    $gateway = makeAccountGateway();
+    $gateway = makeMovementGateway();
 
     $deposit = $gateway->movement([
         'type' => 'deposit',

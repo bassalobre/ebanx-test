@@ -1,11 +1,15 @@
 <?php
 
 use Source\Infra\Database\DatabaseAdapter;
+use Source\Infra\Database\DatabaseConnection;
+use Source\Infra\Database\IDatabase;
 use Source\Modules\Account\AccountGateway;
 use Source\Modules\Account\Adapter\AccountRepository;
 use Source\Modules\Account\Port\In\IAccountGateway;
+use Source\Modules\Account\Port\Out\IAccountRepository;
 use Source\Modules\Movement\Adapter\MovementRepository;
 use Source\Modules\Movement\MovementGateway;
+use Source\Modules\Movement\Port\In\IMovementGateway;
 use Source\Modules\Movement\UseCase\CreateDeposit;
 use Source\Modules\Movement\UseCase\CreateTransfer;
 use Source\Modules\Movement\UseCase\CreateWithdraw;
@@ -49,22 +53,35 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function makeAccountGateway(): IAccountGateway
+function makeDatabase(): IDatabase
 {
-    $database = new DatabaseAdapter();
+    $database = DatabaseConnection::getConnection();
     $database->resetDatabase();
 
-    $accountRepository = new AccountRepository($database);
+    return $database;
+}
+
+function makeAccountRepository(): IAccountRepository
+{
+    $database = makeDatabase();
+    return new AccountRepository($database);
+}
+
+function makeAccountGateway(?IAccountRepository $accountRepository = null): IAccountGateway
+{
+    $accountRepository = $accountRepository ?? makeAccountRepository();
+
+    return new AccountGateway($accountRepository);
+}
+
+function makeMovementGateway(?IAccountRepository $accountRepository = null): IMovementGateway
+{
+    $accountRepository = $accountRepository ?? makeAccountRepository();
     $movementRepository = new MovementRepository();
 
-    $movementGateway = new MovementGateway(
+    return new MovementGateway(
         new CreateDeposit($accountRepository, $movementRepository),
         new CreateWithdraw($accountRepository, $movementRepository),
         new CreateTransfer($accountRepository, $movementRepository),
-    );
-
-    return new AccountGateway(
-        $movementGateway,
-        $accountRepository,
     );
 }
