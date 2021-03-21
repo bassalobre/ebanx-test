@@ -7,6 +7,8 @@ use Source\Modules\Account\AccountGateway;
 use Source\Modules\Account\Adapter\AccountRepository;
 use Source\Modules\Account\Port\In\IAccountGateway;
 use Source\Modules\Account\Port\Out\IAccountRepository;
+use Source\Modules\Account\UseCase\DecreaseAccountBalance;
+use Source\Modules\Account\UseCase\IncreaseAccountBalance;
 use Source\Modules\Movement\Adapter\MovementRepository;
 use Source\Modules\Movement\MovementGateway;
 use Source\Modules\Movement\Port\In\IMovementGateway;
@@ -85,10 +87,25 @@ function makeMovementGateway(?IAccountRepository $accountRepository = null): IMo
 {
     $accountRepository = $accountRepository ?? makeAccountRepository();
     $movementRepository = makeMovementRepository();
+    $increaseAccountBalance = new IncreaseAccountBalance($accountRepository);
+    $decreaseAccountBalance = new DecreaseAccountBalance($accountRepository);
 
     return new MovementGateway(
-        new CreateDeposit($accountRepository, $movementRepository),
-        new CreateWithdraw($accountRepository, $movementRepository),
-        new CreateTransfer($accountRepository, $movementRepository),
+        new CreateDeposit(
+            $accountRepository,
+            $movementRepository,
+            $increaseAccountBalance,
+        ),
+        new CreateWithdraw(
+            $accountRepository,
+            $movementRepository,
+            $decreaseAccountBalance,
+        ),
+        new CreateTransfer(
+            $accountRepository,
+            $movementRepository,
+            $increaseAccountBalance,
+            $decreaseAccountBalance,
+        ),
     );
 }

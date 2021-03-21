@@ -2,6 +2,7 @@
 
 namespace Source\Modules\Movement\UseCase;
 
+use Source\Modules\Account\Port\In\IIncreaseAccountBalance;
 use Source\Modules\Account\Port\Out\IAccountRepository;
 use Source\Modules\Movement\Domain\DTO\DepositDTO;
 use Source\Modules\Movement\Domain\Movement;
@@ -14,6 +15,7 @@ class CreateDeposit implements ICreateDeposit
     public function __construct(
         private IAccountRepository $accountRepository,
         private IMovementRepository $movementRepository,
+        private IIncreaseAccountBalance $increaseAccountBalance,
     ) {}
 
     public function execute(DepositDTO $data): DepositOutput
@@ -24,16 +26,14 @@ class CreateDeposit implements ICreateDeposit
             $account = $this->accountRepository->createAccount($data->destination);
         }
 
-        $movement = new Movement(
+        $movement = $this->movementRepository->saveMovement(new Movement(
             type: $data->type,
             amount: $data->amount,
             destination: $data->destination,
-        );
-        $this->movementRepository->saveMovement($movement);
-        $newBalance = $account->balance + $data->amount;
+        ));
 
         return new DepositOutput(
-            destination: $this->accountRepository->changeAccountBalance($account, $newBalance),
+            destination: $this->increaseAccountBalance->execute($account, $movement),
         );
     }
 }
