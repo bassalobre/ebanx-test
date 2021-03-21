@@ -10,7 +10,6 @@ class DatabaseAdapter implements IDatabase
     public function __construct()
     {
         $this->path = __DIR__  . '/../../../db.json';
-        $this->resetDatabase();
         $this->initDatabase();
     }
 
@@ -35,7 +34,14 @@ class DatabaseAdapter implements IDatabase
 
     private function initDatabase(): void
     {
-        $dbFile = file_get_contents($this->path);
+        try {
+            $dbFile = file_get_contents($this->path);
+        } catch(\Exception $exception) {
+            $this->resetDatabase();
+
+            $dbFile = file_get_contents($this->path);
+        }
+
         $this->database = json_decode($dbFile, true);
     }
 }

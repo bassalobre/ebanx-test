@@ -1,7 +1,6 @@
 <?php
 
 use Source\Infra\Database\DatabaseAdapter;
-use Source\Infra\Database\DatabaseConnection;
 use Source\Infra\Database\IDatabase;
 use Source\Modules\Account\AccountGateway;
 use Source\Modules\Account\Adapter\AccountRepository;
@@ -58,7 +57,7 @@ expect()->extend('toBeOne', function () {
 
 function makeDatabase(): IDatabase
 {
-    $database = DatabaseConnection::getConnection();
+    $database = new DatabaseAdapter();
     $database->resetDatabase();
 
     return $database;

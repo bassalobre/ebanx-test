@@ -1,5 +1,7 @@
 <?php
 
+use Source\Infra\Database\IDatabase;
+
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -13,6 +15,14 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->get('/', function () {
+    return response()->json(['status' => true]);
+});
+
+$router->get('/balance', 'AccountController@balance');
+$router->post('/event', 'MovementController@movement');
+$router->post('/reset', function () {
+    app(IDatabase::class)->resetDatabase();
+
+    return response()->json('OK');
 });
