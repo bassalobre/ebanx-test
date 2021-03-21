@@ -1,6 +1,6 @@
 <?php
 
-test('test should create a transfer event in a non existing account', function () {
+test('test should not create a transfer event in a non existing account', function () {
     $gateway = makeAccountGateway();
 
     $data = [

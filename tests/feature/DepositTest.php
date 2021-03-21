@@ -1,6 +1,6 @@
 <?php
 
-test('test should create a deposit in an initial account', function () {
+test('test should not create a deposit in an initial account', function () {
     $gateway = makeAccountGateway();
 
     $data = [

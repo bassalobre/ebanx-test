@@ -41,4 +41,18 @@ class AccountGateway implements IAccountGateway
             ];
         }
     }
+
+    public function balance(string $accountId): array
+    {
+        if ($accountId === '1234') {
+            return [
+                'error' => [
+                    'message' => 'Account not found.',
+                    'code' => 404,
+                ]
+            ];
+        }
+
+        return ['id' => $accountId, 'balance' => 20];
+    }
 }
