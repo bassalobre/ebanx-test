@@ -21,15 +21,17 @@ class CreateWithdraw implements ICreateWithdraw
     public function execute(WithdrawDTO $data): WithdrawOutput
     {
         $account = $this->accountRepository->getAccountById($data->origin);
-
-        $movement = $this->movementRepository->saveMovement(new Movement(
+        $movement = new Movement(
             type: $data->type,
             amount: $data->amount,
             origin: $data->origin,
-        ));
+        );
+
+        $refreshedAccount = $this->decreaseAccountBalance->execute($account, $movement);
+        $this->movementRepository->saveMovement($movement);
 
         return new WithdrawOutput(
-            origin: $this->decreaseAccountBalance->execute($account, $movement),
+            origin: $refreshedAccount,
         );
     }
 }

@@ -44,3 +44,53 @@ test('test should create a transfer event in an existing account', function () {
         ],
     ]);
 });
+
+test('test should return an error when try to create a transfer event without limit on account', function () {
+    $gateway = makeMovementGateway();
+
+    $deposit = $gateway->movement([
+        'type' => 'deposit',
+        'destination' => '100',
+        'amount' => 10,
+    ]);
+    $response = $gateway->movement([
+        'type' => 'transfer',
+        'origin' => '100',
+        'amount' => 70,
+        'destination' => '200',
+    ]);
+
+    expect($response)->toMatchArray([
+        'error' => [
+            'message' => 'Account limit exceed.',
+            'code' => 406,
+        ]
+    ]);
+});
+
+test('test should create a transfer event using account limit', function () {
+    $gateway = makeMovementGateway();
+
+    $deposit = $gateway->movement([
+        'type' => 'deposit',
+        'destination' => '100',
+        'amount' => 10,
+    ]);
+    $response = $gateway->movement([
+        'type' => 'transfer',
+        'origin' => '100',
+        'amount' => 60,
+        'destination' => '200',
+    ]);
+
+    expect($response)->toMatchArray([
+        'origin' => [
+            'id' => '100',
+            'balance' => -50,
+        ],
+        'destination' => [
+            'id' => '200',
+            'balance' => 60,
+        ],
+    ]);
+});

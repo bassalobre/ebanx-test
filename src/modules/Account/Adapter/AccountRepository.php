@@ -36,6 +36,15 @@ class AccountRepository implements IAccountRepository
         return new Account(...$account);
     }
 
+    public function findOrCreateAccount(string $accountId): Account
+    {
+        try {
+            return $this->getAccountById($accountId);
+        } catch (\Exception $exception) {
+            return $this->createAccount($accountId);
+        }
+    }
+
     public function changeAccountBalance(Account $account, float|int $balance): Account
     {
         $account->balance = $balance;
@@ -55,4 +64,5 @@ class AccountRepository implements IAccountRepository
     {
         $this->database->updateTable('accounts', $this->accounts);
     }
+
 }

@@ -20,20 +20,18 @@ class CreateDeposit implements ICreateDeposit
 
     public function execute(DepositDTO $data): DepositOutput
     {
-        try {
-            $account = $this->accountRepository->getAccountById($data->destination);
-        } catch (\Exception $exception) {
-            $account = $this->accountRepository->createAccount($data->destination);
-        }
-
-        $movement = $this->movementRepository->saveMovement(new Movement(
+        $account = $this->accountRepository->findOrCreateAccount($data->destination);
+        $movement = new Movement(
             type: $data->type,
             amount: $data->amount,
             destination: $data->destination,
-        ));
+        );
+
+        $refreshedAccount = $this->increaseAccountBalance->execute($account, $movement);
+        $this->movementRepository->saveMovement($movement);
 
         return new DepositOutput(
-            destination: $this->increaseAccountBalance->execute($account, $movement),
+            destination: $refreshedAccount,
         );
     }
 }

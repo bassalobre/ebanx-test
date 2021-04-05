@@ -23,23 +23,21 @@ class CreateTransfer implements ICreateTransfer
     public function execute(TransferDTO $data): TransferOutput
     {
         $originAccount = $this->accountRepository->getAccountById($data->origin);
-
-        try {
-            $destinationAccount = $this->accountRepository->getAccountById($data->destination);
-        } catch (\Exception $exception) {
-            $destinationAccount = $this->accountRepository->createAccount($data->destination);
-        }
-
-        $movement = $this->movementRepository->saveMovement(new Movement(
+        $destinationAccount = $this->accountRepository->findOrCreateAccount($data->destination);
+        $movement = new Movement(
             type: $data->type,
             amount: $data->amount,
             origin: $data->origin,
             destination: $data->destination,
-        ));
+        );
+
+        $refreshedOriginAccount = $this->decreaseAccountBalance->execute($originAccount, $movement);
+        $refreshedDestinationAccount = $this->increaseAccountBalance->execute($destinationAccount, $movement);
+        $this->movementRepository->saveMovement($movement);
 
         return new TransferOutput(
-            origin: $this->decreaseAccountBalance->execute($originAccount, $movement),
-            destination: $this->increaseAccountBalance->execute($destinationAccount, $movement),
+            origin: $refreshedOriginAccount,
+            destination: $refreshedDestinationAccount,
         );
     }
 }
